@@ -17,8 +17,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HttpUtils {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(HttpUtils.class);
 
     //参考：http://hc.apache.org/httpcomponents-client-4.5.x/examples.html
     
@@ -27,7 +31,7 @@ public class HttpUtils {
         System.out.println(doPost("http://www.cnblogs.com", null));
     }
 
-    public static String doGet(String url) {
+    public static String doGet(String url) throws Exception {
         String result = null;
         CloseableHttpClient httpclient = HttpClients.createDefault();
         CloseableHttpResponse httpResponse = null;
@@ -41,8 +45,9 @@ public class HttpUtils {
             } else {
                 throw new ClientProtocolException("Unexpected response status: " + status);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch(Exception e){
+            LOG.error(e.getMessage(), e);
+            throw e;
         } finally {
             if(httpResponse != null){
                 try {
@@ -60,7 +65,7 @@ public class HttpUtils {
         return result;
     }
 
-    public static String doPost(String url, Map<String, String> params) {
+    public static String doPost(String url, Map<String, String> params) throws Exception {
         String result = null;
         CloseableHttpClient httpclient = HttpClients.createDefault();
         CloseableHttpResponse httpResponse = null;
@@ -78,7 +83,8 @@ public class HttpUtils {
                 throw new ClientProtocolException("Unexpected response status: " + status);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
+            throw e;
         } finally {
             if(httpResponse != null){
                 try {
