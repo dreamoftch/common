@@ -1,0 +1,36 @@
+/mlsSOAServer/src/main/resources/rebel.xml
+# Gradle work
+.gradle
+build
+
+# Maven work
+target
+
+# IntelliJ IDEA work
+*.idea
+*.iml
+*.ipr
+*.iws
+atlassian-ide-plugin.xml
+.project
+.settings/
+*/.classpath
+*/.project
+*/.settings/
+
+# Android
+local.properties
+
+# Mac OS X
+.DS_Store
+
+#Eclipse
+target/
+.classpath
+.project
+.settings/
+
+# Except .gitignore
+!.gitignore
+/log/*.log
+/log
