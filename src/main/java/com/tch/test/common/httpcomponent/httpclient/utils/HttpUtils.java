@@ -27,12 +27,11 @@ public class HttpUtils {
     //参考：http://hc.apache.org/httpcomponents-client-4.5.x/examples.html
     
     public final static void main(String[] args) throws Exception {
-        System.out.println(doGet("http://www.baidu.com"));
-        System.out.println(doPost("http://www.cnblogs.com", null));
+        System.out.println(doGet("http://localhost:8080/building/detail?buildingId=13"));
+        //System.out.println(doPost("http://www.cnblogs.com", null));
     }
 
     public static String doGet(String url) throws Exception {
-        String result = null;
         CloseableHttpClient httpclient = HttpClients.createDefault();
         CloseableHttpResponse httpResponse = null;
         HttpGet httpRequst = new HttpGet(url);
@@ -41,7 +40,7 @@ public class HttpUtils {
             int status = httpResponse.getStatusLine().getStatusCode();
             if (status >= 200 && status < 300) {
                 HttpEntity httpEntity = httpResponse.getEntity();
-                result = EntityUtils.toString(httpEntity);
+                return EntityUtils.toString(httpEntity);
             } else {
                 throw new ClientProtocolException("Unexpected response status: " + status);
             }
@@ -62,7 +61,6 @@ public class HttpUtils {
                 e.printStackTrace();
             }
         }
-        return result;
     }
 
     public static String doPost(String url, Map<String, String> params) throws Exception {
