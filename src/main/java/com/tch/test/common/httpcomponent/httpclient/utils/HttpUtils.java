@@ -78,7 +78,9 @@ public class HttpUtils {
                 HttpEntity httpEntity = httpResponse.getEntity();
                 result = EntityUtils.toString(httpEntity);
             } else {
-                throw new ClientProtocolException("Unexpected response status: " + status);
+            	HttpEntity httpEntity = httpResponse.getEntity();
+                result = EntityUtils.toString(httpEntity);
+                throw new ClientProtocolException("Unexpected response status: " + status + ", result: " + result);
             }
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
