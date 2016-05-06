@@ -15,12 +15,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSON;
 
 public class HttpClientHelper {
     public static final Logger logger = LoggerFactory
@@ -81,6 +84,16 @@ public class HttpClientHelper {
         }
         return sendRequest(request);
     }
+    
+    public static String doPutInJson(String url,Map<String, String> params)
+            throws Exception {
+        HttpPut request = new HttpPut(url);
+        request.addHeader("Content-Type", "application/json");
+        if (params != null && !params.isEmpty()) {
+        	request.setEntity(new StringEntity(JSON.toJSONString(params)));
+        }
+        return sendRequest(request);
+    }
  
     /**
      * @description 向指定的URL发起一个GET请求并以String类型返回数据，获取数据总线数据
@@ -103,6 +116,15 @@ public class HttpClientHelper {
         HttpPost request = new HttpPost(url);
         if (params != null && !params.isEmpty()) {
         	request.setEntity(new UrlEncodedFormEntity(convert2NameValulePaires(params), "UTF-8"));
+        }
+        return sendRequest(request);
+    }
+    
+    public static String doPostInJson(String url, Map<String, String> params) throws Exception {
+        HttpPost request = new HttpPost(url);
+        request.addHeader("Content-Type", "application/json");
+        if (params != null && !params.isEmpty()) {
+        	request.setEntity(new StringEntity(JSON.toJSONString(params)));
         }
         return sendRequest(request);
     }

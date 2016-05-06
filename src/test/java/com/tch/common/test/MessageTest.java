@@ -16,8 +16,9 @@ public class MessageTest {
 	@Test
 	public void testAddMessage() throws Exception{
 		Map<String, String> params = new HashMap<String, String>();
-		params.put("content", "tianchaohui");
-		String messageStr = HttpClientHelper.doPost("http://localhost:9000/message/add", params);
+		params.put("content", "tianchaohui-9");
+		//String messageStr = HttpClientHelper.doPost("http://localhost:9000/message/add", "{\"content\":\"tianchaohui-5\"}");
+		String messageStr = HttpClientHelper.doPostInJson("http://localhost:9000/message/add", params);
 		System.out.println(messageStr);
 	}
 	
@@ -31,7 +32,7 @@ public class MessageTest {
 	public void testUpdateMessage() throws Exception{
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("content", "chaohui-1");
-		String messageStr = HttpClientHelper.doPut("http://localhost:9000/message/update/1", params);
+		String messageStr = HttpClientHelper.doPutInJson("http://localhost:9000/message/update/4", params);
 		System.out.println(messageStr);
 	}
 	
