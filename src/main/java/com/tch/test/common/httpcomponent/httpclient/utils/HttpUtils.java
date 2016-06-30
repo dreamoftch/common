@@ -3,6 +3,7 @@ package com.tch.test.common.httpcomponent.httpclient.utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +28,13 @@ public class HttpUtils {
     //参考：http://hc.apache.org/httpcomponents-client-4.5.x/examples.html
     
     public final static void main(String[] args) throws Exception {
-        System.out.println(doGet("http://localhost:8080/building/detail?buildingId=13"));
+//        System.out.println(doGet("http://localhost:8080/building/detail?buildingId=13"));
         //System.out.println(doPost("http://www.cnblogs.com", null));
+    	Map<String, String> params = new HashMap<>();
+        params.put("key1", "value1");
+		//System.out.println(simpleHttpGet("http://www.baidu.com"));
+        //System.out.println(simpleHttpPost("http1://www.cnblogs.com", null));
+    	System.out.println(doPost("http://192.168.43.142:9000/release/customerRelease", params ));
     }
 
     public static String doGet(String url) throws Exception {

@@ -2,6 +2,7 @@ package com.tch.test.common.httpcomponent.httpclient.utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
@@ -22,10 +24,25 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSON;
+
 public class HttpClientHelper {
     public static final Logger logger = LoggerFactory
             .getLogger(HttpClientHelper.class);
  
+    public static void main(String[] args) throws Exception {
+    	Map<String, String> params = new HashMap<>();
+        params.put("key1", "value1");
+		//System.out.println(simpleHttpGet("http://www.baidu.com"));
+        //System.out.println(simpleHttpPost("http1://www.cnblogs.com", null));
+    	System.out.println(doPostInJson("http://192.168.43.142:9000/release/customerRelease", params ));
+    	/*
+    	Map<String, String> params = new HashMap<>();
+        params.put("account", "18521736087");
+        params.put("password", "123456");
+    	System.out.println(doPostInJson("http://localhost:9000/user/login", params ));*/
+	}
+    
     /**
      * @description 发送Http请求
      * @param request
@@ -73,12 +90,21 @@ public class HttpClientHelper {
      * @return
      * @throws IOException
      */
-    public static String doPut(String url, List<NameValuePair> values)
+    public static String doPut(String url,Map<String, String> params)
             throws Exception {
         HttpPut request = new HttpPut(url);
- 
-        if (values != null) {
-            request.setEntity(new UrlEncodedFormEntity(values));
+        if (params != null) {
+            request.setEntity(new UrlEncodedFormEntity(convert2NameValulePaires(params), "UTF-8"));
+        }
+        return sendRequest(request);
+    }
+    
+    public static String doPutInJson(String url,Map<String, String> params)
+            throws Exception {
+        HttpPut request = new HttpPut(url);
+        request.addHeader("Content-Type", "application/json");
+        if (params != null && !params.isEmpty()) {
+        	request.setEntity(new StringEntity(JSON.toJSONString(params)));
         }
         return sendRequest(request);
     }
@@ -105,6 +131,17 @@ public class HttpClientHelper {
         if (params != null && !params.isEmpty()) {
         	request.setEntity(new UrlEncodedFormEntity(convert2NameValulePaires(params), "UTF-8"));
         }
+        return sendRequest(request);
+    }
+    
+    public static String doPostInJson(String url, Map<String, String> params) throws Exception {
+        HttpPost request = new HttpPost(url);
+        request.addHeader("Content-Type", "application/json");
+        if (params != null && !params.isEmpty()) {
+        	request.setEntity(new StringEntity(JSON.toJSONString(params)));
+        }
+        System.out.println(JSON.toJSONString(params));
+        System.out.println(request);
         return sendRequest(request);
     }
     

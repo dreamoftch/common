@@ -2,6 +2,7 @@ package com.tch.common.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,19 @@ public class HttpClientHelper {
     public static final Logger logger = LoggerFactory
             .getLogger(HttpClientHelper.class);
  
+    public static void main(String[] args) throws Exception {
+    	Map<String, String> params = new HashMap<>();
+        params.put("key1", "value1");
+		//System.out.println(simpleHttpGet("http://www.baidu.com"));
+        //System.out.println(simpleHttpPost("http1://www.cnblogs.com", null));
+    	System.out.println(doPostInJson("http://192.168.43.142:9000/release/customerRelease", params ));
+    	/*
+    	Map<String, String> params = new HashMap<>();
+        params.put("account", "18521736087");
+        params.put("password", "123456");
+    	System.out.println(doPostInJson("http://localhost:9000/user/login", params ));*/
+	}
+    
     /**
      * @description 发送Http请求
      * @param request
@@ -126,6 +140,8 @@ public class HttpClientHelper {
         if (params != null && !params.isEmpty()) {
         	request.setEntity(new StringEntity(JSON.toJSONString(params)));
         }
+        System.out.println(JSON.toJSONString(params));
+        System.out.println(request);
         return sendRequest(request);
     }
     

@@ -1,6 +1,7 @@
 package com.tch.test.common.httpcomponent.httpclient.utils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
@@ -21,8 +22,11 @@ public class SimpleHttpUtils {
     //参考：http://hc.apache.org/httpcomponents-client-4.5.x/quickstart.html
     
     public final static void main(String[] args) throws Exception {
-        System.out.println(simpleHttpGet("http://www.baidu.com"));
-        System.out.println(simpleHttpPost("http1://www.cnblogs.com", null));
+        Map<String, String> params = new HashMap<>();
+        params.put("key1", "value1");
+		//System.out.println(simpleHttpGet("http://www.baidu.com"));
+        //System.out.println(simpleHttpPost("http1://www.cnblogs.com", null));
+    	System.out.println(simpleHttpPost("http://192.168.43.142:9000/release/customerRelease", params ));
     }
 
     public static String simpleHttpGet(String url) throws Exception {
