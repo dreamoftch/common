@@ -12,72 +12,42 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSON;
+
 
 public class HttpUtils {
+ 
+    public static void main(String[] args) throws Exception {
+        String url = "https://leancloud.cn/1.1/rtm/messages/logs";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("X-LC-Id", "UdMRw0pCFzpOIKGPR4j1S0R6-gzGzoHsz");
+        headers.put("X-LC-Key", "gAnNaKTaCDbecv88IdhPjuV1,master");
+    	System.out.println(doGet(url, headers));
+	}
     
-    private static final Logger LOG = LoggerFactory.getLogger(HttpUtils.class);
-
-    //参考：http://hc.apache.org/httpcomponents-client-4.5.x/examples.html
-    
-    public final static void main(String[] args) throws Exception {
-//        System.out.println(doGet("http://localhost:8080/building/detail?buildingId=13"));
-        //System.out.println(doPost("http://www.cnblogs.com", null));
-    	Map<String, String> params = new HashMap<>();
-        params.put("key1", "value1");
-		//System.out.println(simpleHttpGet("http://www.baidu.com"));
-        //System.out.println(simpleHttpPost("http1://www.cnblogs.com", null));
-    	System.out.println(doPost("http://192.168.43.142:9000/release/customerRelease", params ));
-    }
-
-    public static String doGet(String url) throws Exception {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        CloseableHttpResponse httpResponse = null;
-        HttpGet httpRequst = new HttpGet(url);
-        try {
-            httpResponse = httpclient.execute(httpRequst);
-            int status = httpResponse.getStatusLine().getStatusCode();
-            if (status >= 200 && status < 300) {
-                HttpEntity httpEntity = httpResponse.getEntity();
-                return EntityUtils.toString(httpEntity);
-            } else {
-                throw new ClientProtocolException("Unexpected response status: " + status);
-            }
-        } catch(Exception e){
-            LOG.error(e.getMessage(), e);
-            throw e;
-        } finally {
-            if(httpResponse != null){
-                try {
-                    httpResponse.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                httpclient.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static String doPost(String url, Map<String, String> params) throws Exception {
-        String result = null;
+    /**
+     * @description 发送Http请求
+     * @param request
+     * @return
+     * @throws Exception 
+     */
+    public static String sendRequest(HttpUriRequest httpRequst) throws Exception {
+    	String result = null;
         CloseableHttpClient httpclient = HttpClients.createDefault();
         CloseableHttpResponse httpResponse = null;
         try {
-            HttpPost httpRequst = new HttpPost(url);
-            if (params != null && !params.isEmpty()) {
-                httpRequst.setEntity(new UrlEncodedFormEntity(convert2NameValulePaires(params), "UTF-8"));
-            }
             httpResponse = httpclient.execute(httpRequst);
             int status = httpResponse.getStatusLine().getStatusCode();
             if (status >= 200 && status < 300) {
@@ -89,7 +59,6 @@ public class HttpUtils {
                 throw new ClientProtocolException("Unexpected response status: " + status + ", result: " + result);
             }
         } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
             throw e;
         } finally {
             if(httpResponse != null){
@@ -106,6 +75,90 @@ public class HttpUtils {
             }
         }
         return result;
+    }
+ 
+    /**
+     * @description 向指定的URL发起一个put请求
+     * @param uri
+     * @param values
+     * @return
+     * @throws IOException
+     */
+    public static String doPut(String url,Map<String, String> params)
+            throws Exception {
+        HttpPut request = new HttpPut(url);
+        if (params != null) {
+            request.setEntity(new UrlEncodedFormEntity(convert2NameValulePaires(params), "UTF-8"));
+        }
+        return sendRequest(request);
+    }
+    
+    public static String doPutInJson(String url,Map<String, String> params)
+            throws Exception {
+        HttpPut request = new HttpPut(url);
+        request.addHeader("Content-Type", "application/json");
+        if (params != null && !params.isEmpty()) {
+        	request.setEntity(new StringEntity(JSON.toJSONString(params)));
+        }
+        return sendRequest(request);
+    }
+ 
+    /**
+     * @description 向指定的URL发起一个GET请求并以String类型返回数据，获取数据总线数据
+     * @param url
+     * @return
+     * @throws Exception 
+     */
+    public static String doGet(String url) throws Exception {
+        HttpGet request = new HttpGet(url);
+        return sendRequest(request);
+    }
+    
+    public static String doGet(String url, Map<String, String> headers) throws Exception {
+        HttpGet request = new HttpGet(url);
+        if(headers != null && ! headers.isEmpty()){
+        	for(Map.Entry<String, String> entry : headers.entrySet()){
+        		request.addHeader(entry.getKey(), entry.getValue());
+        	}
+        }
+        return sendRequest(request);
+    }
+ 
+    /**
+     * @description 向指定的URL发起一个post请求
+     * @param url
+     * @return
+     * @throws IOException
+     */
+    public static String doPost(String url, Map<String, String> params) throws Exception {
+        HttpPost request = new HttpPost(url);
+        if (params != null && !params.isEmpty()) {
+        	request.setEntity(new UrlEncodedFormEntity(convert2NameValulePaires(params), "UTF-8"));
+        }
+        return sendRequest(request);
+    }
+    
+    public static String doPostInJson(String url, Map<String, String> params) throws Exception {
+        HttpPost request = new HttpPost(url);
+        request.addHeader("Content-Type", "application/json");
+        if (params != null && !params.isEmpty()) {
+        	request.setEntity(new StringEntity(JSON.toJSONString(params)));
+        }
+        return sendRequest(request);
+    }
+    
+    public static String doPostInForm(String url, String params) throws Exception {
+        HttpPost request = new HttpPost(url);
+        request.addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        if (params != null && !params.isEmpty()) {
+        	request.setEntity(new StringEntity(params));
+        }
+        return sendRequest(request);
+    }
+    
+    public static String doDelete(String url) throws Exception {
+        HttpDelete request = new HttpDelete(url);
+        return sendRequest(request);
     }
     
     public static List<NameValuePair> convert2NameValulePaires(Map<String, String> params){
