@@ -31,17 +31,17 @@ public final class ImageUtil {
     public static void main(String[] args) throws IOException {
     	String destPath = "/media/tch/disk1/study/temp/folder/";
     	List<String> sourcePics = new ArrayList<>();
-    	sourcePics.add("https://www.richmj.com/static/agent/userphoto/95_1473305068822_2.JPEG");
-    	sourcePics.add("/media/tch/disk1/study/temp/2.jpg");
-//    	sourcePics.add("/media/tch/disk1/study/temp/3.jpg");
-//    	sourcePics.add("/media/tch/disk1/study/temp/4.jpg");
-//    	sourcePics.add("/media/tch/disk1/study/temp/5.jpg");
-//    	sourcePics.add("/media/tch/disk1/study/temp/6.jpg");
-//    	sourcePics.add("/media/tch/disk1/study/temp/7.jpg");
-//    	sourcePics.add("/media/tch/disk1/study/temp/8.jpg");
-//    	sourcePics.add("/media/tch/disk1/study/temp/9.jpg");
+    	sourcePics.add("http://h.hiphotos.baidu.com/zhidao/pic/item/eac4b74543a9822628850ccc8c82b9014b90eb91.jpg");
+    	sourcePics.add("http://h.hiphotos.baidu.com/zhidao/pic/item/3812b31bb051f81991b9d8dbdcb44aed2f73e787.jpg");
+    	sourcePics.add("http://cdn.duitang.com/uploads/item/201412/19/20141219154459_3P4G2.jpeg");
+    	sourcePics.add("http://img4.duitang.com/uploads/item/201603/12/20160312211255_nB5mQ.thumb.700_0.jpeg");
+    	sourcePics.add("http://h.hiphotos.baidu.com/zhidao/pic/item/c8177f3e6709c93d0f5f00e79b3df8dcd1005474.jpg");
+    	sourcePics.add("http://ww1.sinaimg.cn/crop.7.22.1192.1192.1024/5c6defebjw8epti0r9noaj20xc0y1n0x.jpg");
+    	sourcePics.add("http://ww1.sinaimg.cn/crop.0.0.800.800.1024/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg");
+    	sourcePics.add("http://ww2.sinaimg.cn/crop.0.0.1242.1242.1024/005EWUXPjw8eto7cdd42wj30yi0yiabz.jpg");
+    	sourcePics.add("http://ww2.sinaimg.cn/crop.0.0.1080.1080.1024/d773ebfajw8eum57eobkwj20u00u075w.jpg");
     	for(int i = 1; i <= sourcePics.size(); i++){
-    		ImageUtil.getGroupAvatar(sourcePics.subList(0, i), destPath + "out" + i + ".jpg");
+    		getGroupAvatar(sourcePics.subList(0, i), destPath + "out" + i + ".jpg");
     	}
 	}
     
@@ -56,7 +56,7 @@ public final class ImageUtil {
         List<BufferedImage> bufferedImages = new ArrayList<BufferedImage>();
         // 压缩图片所有的图片生成尺寸
         for (int i = 0; i < totalPicNum; i++) {
-            bufferedImages.add(ImageUtil.resizeNetWorkImage(userAvatars.get(i), picInfo.getPerPicWith(), picInfo.getPerPicHeight(), true));
+            bufferedImages.add(resizeNetWorkImage(userAvatars.get(i), picInfo.getPerPicWith(), picInfo.getPerPicHeight(), true));
         }
         BufferedImage outImage = new BufferedImage(PIC_WIDTH, PIC_HEIGHT, BufferedImage.TYPE_INT_RGB);
         // 生成画布
@@ -64,6 +64,7 @@ public final class ImageUtil {
         Graphics2D graphics2d = (Graphics2D) graphics;
         graphics2d.setBackground(new Color(231,231,231));
         graphics2d.clearRect(0, 0, PIC_WIDTH, PIC_HEIGHT);
+        //开始将单个图片逐个画到画布上
         for (int picIndex = 0; picIndex < bufferedImages.size(); picIndex++) {
         	if(totalPicNum == 2 || totalPicNum == 5 || totalPicNum == 6){
         		//需要特殊处理，来让图片垂直居中
@@ -73,6 +74,7 @@ public final class ImageUtil {
         		normalDraw(bufferedImages.get(picIndex), picIndex, picInfo, graphics2d);
         	}
         }
+        //将最终结果图片输出到指定文件
         ImageIO.write(outImage, PICTRUE_FORMATE_JPG, new File(destPath));
     }
 
@@ -88,12 +90,14 @@ public final class ImageUtil {
     			y = PIC_HEIGHT / 2;
     		}
     	}
+    	//将指定的图片画到指定的位置
 		graphics2d.drawImage(bufferedImage, xIndex * picInfo.getPerPicWith(), y, null);
 	}
 
 	private static void normalDraw(BufferedImage bufferedImage, int picIndex, PicInfo picInfo, Graphics2D graphics2d) {
     	int xIndex = (picIndex % picInfo.getPicNumPerRow());
 		int yIndex = (picIndex / picInfo.getPicNumPerRow());
+		//将指定的图片画到指定的位置
 		graphics2d.drawImage(bufferedImage, xIndex * picInfo.getPerPicWith(), yIndex * picInfo.getPerPicHeight(), null);
 	}
 
@@ -143,6 +147,7 @@ public final class ImageUtil {
      */
     public static BufferedImage resizeLocalImage(File file, int width, int height, boolean fillWhite) {
         try {
+        	//从本地加载图片
             BufferedImage bufferedImage = ImageIO.read(file);
             return resizeImage(bufferedImage, width, height, fillWhite);
         } catch (IOException e) {
@@ -161,6 +166,7 @@ public final class ImageUtil {
      */
     public static BufferedImage resizeNetWorkImage(String imageUrl, int width, int height, boolean fillWhite) {
         try {
+        	//从网络加载图片
             BufferedImage bufferedImage = ImageIO.read(new URL(imageUrl));
             return resizeImage(bufferedImage, width, height, fillWhite);
         } catch (IOException e) {
@@ -216,6 +222,7 @@ public final class ImageUtil {
     	int effectWithHeight = Math.min(perPicWith, perPicHeight);
     	
     	PicInfo picInfo = new PicInfo();
+    	//图片的宽高统一
     	picInfo.setPerPicWith(effectWithHeight);
     	picInfo.setPerPicHeight(effectWithHeight);
     	picInfo.setPicNumPerRow(picNumPerRow);
@@ -228,7 +235,9 @@ public final class ImageUtil {
      * @author tianchaohui
      */
     public static class PicLocation{
+    	//横坐标
     	int xIndex = 0;
+    	//纵坐标
         int yIndex = 0;
 		public int getxIndex() {
 			return xIndex;
